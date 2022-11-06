@@ -18,56 +18,36 @@ class Sidebar {
      * при нажатии на кнопку .sidebar-toggle
      * */
     static initToggleButton() {
-        let sidebarMini = document.querySelector('.sidebar-mini');
+        let body = document.querySelector('.sidebar-mini');
+        let button = document.querySelector('.sidebar-toggle');
 
-        sidebarMini.addEventListener('click', () => {
-            if (!sidebarMini.className.includes('sidebar-open')) {
-                sidebarMini.classList.add('sidebar-open');
-                sidebarMini.classList.add('sidebar-collapse');
-            } else {
-                sidebarMini.classList.remove('sidebar-open');
-                sidebarMini.classList.remove('sidebar-collapse');
-            }
-        });
+        button.addEventListener('click', () => {
+            body.classList.toggle('sidebar-open');
+            body.classList.toggle('sidebar-collapse');
+        })
     }
 
-    /**
-     * При нажатии на кнопку входа, показывает окно входа
-     * (через найденное в App.getModal)
-     * При нажатии на кнопку регастрации показывает окно регистрации
-     * При нажатии на кнопку выхода вызывает User.logout и по успешному
-     * выходу устанавливает App.setState( 'init' )
-     * */
     static initAuthLinks() {
-        let btnRegister = document.querySelector('.menu-item_register');
-        let btnLogin = document.querySelector('.menu-item_login');
-        let btnClose = document.querySelectorAll('button');
-
-        btnRegister.addEventListener('click', e => {
-            e.preventDefault();
-            let registerModal = App.getModal('register');
-            let modal = new Modal(registerModal);
-
-            modal.open()
+        let sidebarItem = document.querySelector('.sidebar-menu').querySelectorAll('.menu-item');
+        sidebarItem.forEach(element => {
+            if (element.classList.contains('menu-item_login')) {
+                element.addEventListener('click', () => {
+                    let login = App.getModal('login');
+                    login.open();
+                })
+            }
+            if (element.classList.contains('menu-item_register')) {
+                element.addEventListener('click', () => {
+                    let register = App.getModal('register');
+                    register.open();
+                })
+            }
+            if (element.classList.contains('menu-item_logout')) {
+                element.addEventListener('click', () => {
+                    User.logout();
+                    App.setState('init');
+                })
+            }
         });
-
-        btnLogin.addEventListener('click', e => {
-            e.preventDefault();
-            let loginModal = App.getModal('login');
-            let modal = new Modal(loginModal);
-
-            modal.open()
-        });
-
-        btnClose.forEach(elem => {
-            elem.addEventListener('click', e => {
-                if (elem.dataset.dismiss === 'modal') {
-                    let currentModal = elem.closest('.modal');
-                    let modal = new Modal(currentModal);
-                    modal.close();
-                }
-            });
-        });
-
     }
 }

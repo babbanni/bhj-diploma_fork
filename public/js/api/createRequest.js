@@ -12,6 +12,7 @@ const createRequest = (options = {}) => {
         method = options.method;
         url = options.url;
         if (method === 'GET') {
+            url += '?';
             for ([key, value] of data) {
                 url += key + '=' + value + '&';
             }
@@ -24,19 +25,19 @@ const createRequest = (options = {}) => {
         }
     }
 
+
     xhr.responseType = 'json';
 
     try {
         xhr.open(method, url);
         xhr.addEventListener('readystatechange', function() {
             if (this.readyState == xhr.DONE && xhr.status === 200) {
-                options.callback = (err, response) => {
-                    console.log(err, response);
-                };
+                options.callback(xhr.response.error, xhr.response);
             }
         });
 
         xhr.send(method === 'GET' ? {} : this.formData);
+
     } catch (error) {
         console.log(error);
     }

@@ -11,11 +11,13 @@ class Account extends Entity {
      * Получает информацию о счёте
      * */
     static get(id = '', callback) {
-        let url = this.URL + `/${id}`;
-        createRequest({
-            url,
-            method: 'GET',
-            callback
-        });
+        this.list(User.current(), (err, response) => {
+            if (response.success) {
+                const accountName = response.data.find(accountNames => accountNames['id'] === id)
+                callback(err, accountName.name)
+            } else {
+                alert(err);
+            }
+        })
     }
 }

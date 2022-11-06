@@ -28,7 +28,11 @@ class User {
      * */
     static current() {
         if (localStorage.user) {
-            return localStorage.getItem('user');
+            try {
+                return JSON.parse(localStorage.user);
+            } catch (e) {
+                console.log(e);
+            }
         } else {
             return undefined;
         }
@@ -71,8 +75,6 @@ class User {
             callback: (err, response) => {
                 if (response && response.user) {
                     this.setCurrent(response.user);
-                } else {
-                    err = response.error;
                 }
                 callback(err, response);
             }
@@ -89,8 +91,13 @@ class User {
         createRequest({
             url: this.URL + '/register',
             data,
-            method: 'GET',
-            callback
+            method: 'POST',
+            callback: (err, response) => {
+                if (response.success) {
+                    this.setCurrent(response.user);
+                }
+                callback(err, response);
+            }
         });
     }
 
@@ -105,11 +112,8 @@ class User {
             method: 'POST',
             callback: (err, response) => {
                 if (response.success) {
-                    this.unsetCurrent();
-                } else {
-                    err = response.error;
+                    this.unsetCurrent(response.user);
                 }
-                callback(err, response);
             },
         });
     }
